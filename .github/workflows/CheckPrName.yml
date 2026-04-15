@@ -1,0 +1,26 @@
+name: Check PR Name
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  check_title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title
+        run: |
+          # Regex pour correspondre à : type(scope): description ou type(scope) : description
+          # Types autorisés : add, feat, rm, fix
+          REGEX="^(add|feat|rm|fix)\([^)]+\)?: .+$"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          
+          if [[ ! "$PR_TITLE" =~ $REGEX ]]; then
+            echo "::error::Titre de PR invalide : '$PR_TITLE'."
+            echo "::error::Le titre doit respecter l'une de ces normes :"
+            echo "::error::  - add(feature): description"
+            echo "::error::  - feat(feature): description"
+            echo "::error::  - rm(feature): description"
+            echo "::error::  - fix(feature): description"
+            exit 1
+          fi

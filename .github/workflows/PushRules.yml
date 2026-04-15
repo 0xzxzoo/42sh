@@ -1,0 +1,17 @@
+name: Enforce Push Rules
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check_source_branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure branch source is dev
+        run: |
+          if [[ "${{ github.head_ref }}" != "dev" ]]; then
+            echo "::error::Les fusions vers 'main' ne sont autorisées que depuis la branche 'dev'."
+            exit 1
+          fi
