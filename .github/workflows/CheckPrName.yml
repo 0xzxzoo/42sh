@@ -20,7 +20,7 @@ jobs:
             echo "::error::Le titre doit respecter l'une de ces normes :"
             echo "::error::  - add(feature): description"
             echo "::error::  - feat(feature): description"
-            echo "::error::  - rm(feature) : description"
-            echo "::error::  - fix(feature) : description"
+            echo "::error::  - rm(feature): description"
+            echo "::error::  - fix(feature): description"
             exit 1
           fi
