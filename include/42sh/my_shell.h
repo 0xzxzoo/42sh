@@ -5,6 +5,7 @@
 ** my_shell
 */
 
+// clang-format off
 #ifndef MY_SHELL_H_
     #define MY_SHELL_H_
 
@@ -47,5 +48,7 @@ char *get_last_pwd(oldpwd_t *head);
 void add_oldpwd_node(oldpwd_t **head, char *path);
 void process_semicolons(char *line, char ***env);
 int my_info(char **args, char ***env);
+int my_which(char **args, char ***env);
+int my_where(char **args, char ***env);
 
 #endif /* !MY_SHELL_H_ */
