@@ -9,6 +9,7 @@ SRC	=	src/my_sh.c	\
 		src/builtins/cd.c	\
 		src/builtins/setenv.c	\
 		src/builtins/unsetenv.c	\
+		src/builtins/where.c	\
 		src/execution/exec.c	\
 		src/execution/pipe.c	\
 		src/parsing/detect.c	\

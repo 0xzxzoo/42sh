@@ -7,6 +7,7 @@
 
 #include "42sh/my_shell.h"
 #include "my.h"
+// clang-format off
 
 static const builtin_t BUILTIN[] = {
     {"cd", my_cd},
@@ -14,6 +15,7 @@ static const builtin_t BUILTIN[] = {
     {"unsetenv", my_unsetenv},
     {"exit", my_exit},
     {"shinfo", my_info},
+    {"where", my_where},
     {NULL, NULL}
 };
 
