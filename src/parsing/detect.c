@@ -16,6 +16,7 @@ static const builtin_t BUILTIN[] = {
     {"exit", my_exit},
     {"shinfo", my_info},
     {"where", my_where},
+    {"which", my_which},
     {NULL, NULL}
 };
 
