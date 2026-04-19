@@ -11,14 +11,21 @@ SRC	=	src/my_sh.c	\
 		src/builtins/unsetenv.c	\
 		src/builtins/where.c	\
 		src/execution/exec.c	\
-		src/execution/pipe.c	\
+		src/execution/exec_redir.c	\
 		src/parsing/detect.c	\
 		src/parsing/readline.c	\
+		src/parsing/ast_nodes.c	\
+		src/parsing/exec_ast.c	\
+		src/parsing/exec_nodes.c	\
+		src/parsing/parser_cmd.c	\
+		src/parsing/parser_core.c 	\
+		src/parsing/parser_utils.c	\
+		src/parsing/parser_redir.c	\
+		src/parsing/word_array.c \
 		src/utils/oldpwd.c	\
 		src/utils/path.c	\
 		src/builtins/exit.c	\
-		src/builtins/demo.c	\
-		src/execution/semicolone.c
+		src/builtins/demo.c
 
 OBJ	=	$(SRC:.c=.o)
 
