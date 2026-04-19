@@ -25,6 +25,8 @@ OBJ	=	$(SRC:.c=.o)
 
 NAME	=	42sh
 
+SRC_NO_MAIN =   $(filter-out src/my_sh.c, $(SRC))
+
 LIB 	=	lib/my/libmy.a
 
 CC	=	epiclang
@@ -41,6 +43,12 @@ $(LIB):
 $(NAME):	$(LIB) $(OBJ)
 	$(CC) -o $(NAME) $(CFLAGS) $(OBJ) $(LDFLAGS)
 
+tests_run: fclean $(LIB)
+	$(CC) -o unit_tests $(SRC_NO_MAIN) tests/test_builtins.c 	tests/test_utils.c \
+		$(CFLAGS) $(LDFLAGS) --coverage -lcriterion
+	./unit_tests --verbose
+	gcovr --exclude tests/ --branches --print-summary
+
 clean:
 	rm -f $(OBJ)
 	make clean -C lib/my
@@ -49,6 +57,10 @@ fclean:	clean
 	make fclean -C lib/my
 	rm -f lib/libmy.a
 	rm -f $(NAME)
+	rm -f unit_tests
+	find . -name "*.gcda" -delete
+	find . -name "*.gcno" -delete
+	find . -name "unit_tests-*.gcda" -delete
 
 re:	fclean all
 
