@@ -31,7 +31,7 @@ int main(int argc, char **argv, char **env)
 
     line = read_line();
     while (line) {
-        process_semicolons(line, &my_env);
+        process_ast_line(line, &my_env);
         free(line);
         line = read_line();
     }
