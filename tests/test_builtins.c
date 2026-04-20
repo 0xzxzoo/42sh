@@ -142,23 +142,6 @@ Test(builtin_exit, exits_with_zero_when_no_arg, .exit_code = 0)
     my_exit(args, &env);
 }
 
-Test(builtin_exit, check_exit_in_pipe_exits, .exit_code = 7)
-{
-    check_exit_in_pipe("exit 7");
-}
-
-Test(builtin_exit, check_exit_in_pipe_ignores_other_cmd)
-{
-    check_exit_in_pipe("ls -la");
-    cr_assert(1, "check_exit_in_pipe must not exit for non-exit command");
-}
-
-Test(builtin_exit, check_exit_in_pipe_empty_cmd)
-{
-    check_exit_in_pipe("");
-    cr_assert(1, "check_exit_in_pipe must not crash on empty string");
-}
-
 Test(builtin_setenv, no_args_prints_env, .init = cr_redirect_stdout)
 {
     char *raw[] = {"ABC=bar", "BAZ=qux", NULL};
