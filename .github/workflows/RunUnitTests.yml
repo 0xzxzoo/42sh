@@ -1,0 +1,22 @@
+name: Run Unit Tests
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  unit_tests:
+    runs-on: ubuntu-latest
+    container:
+      image:epitechcontent/epitest-docker:latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Build lib
+        run: make -C lib/my
+
+      - name: Run Tests
+        run: make tests_run
