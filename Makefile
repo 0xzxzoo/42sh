@@ -55,8 +55,8 @@ tests_run: fclean $(LIB)
 	tests/parsing/test_parser.c	tests/parsing/test_exec.c tests/parsing/test_parsing_utils.c \
 	tests/parsing/test_word_array.c \
 		$(CFLAGS) $(LDFLAGS) --coverage -lcriterion
-	./unit_tests --verbose
-	gcovr --root . --exclude tests/ --txt-metric branch --print-summary
+	./unit_tests
+	gcovr . --root . --exclude tests/ --gcov-executable "llvm-cov gcov" --txt-metric branch --print-summary
 
 clean:
 	rm -f $(OBJ)
