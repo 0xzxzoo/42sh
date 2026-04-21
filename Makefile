@@ -56,7 +56,7 @@ tests_run: fclean $(LIB)
 	tests/parsing/test_word_array.c \
 		$(CFLAGS) $(LDFLAGS) --coverage -lcriterion
 	./unit_tests --verbose
-	gcovr --exclude tests/ --branches --print-summary
+	gcovr --root . --exclude tests/ --txt-metric branch --print-summary
 
 clean:
 	rm -f $(OBJ)
