@@ -18,6 +18,7 @@
     #include <sys/utsname.h>
     #include <signal.h>
     #include <fcntl.h>
+    #define PATH_MAX 4096
 
 typedef struct job_list_s job_list_t;
 
@@ -55,5 +56,7 @@ int my_jobs(job_list_t *jobs, char **args, char ***env);
 int my_bg(job_list_t *jobs, char **args, char ***env);
 int my_fg(job_list_t *jobs, char **args, char ***env);
 int get_job_id(job_list_t *jobs, char *arg);
+void my_put_error(const char *str);
+char *env_get(char ***env, const char *name);
 
 #endif /* !MY_SHELL_H_ */
