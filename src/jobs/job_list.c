@@ -9,18 +9,6 @@
 
 job_list_t g_jobs = {0};
 
-void jobs_init(void)
-{
-    for (int i = 0; i < MAX_JOBS; i++) {
-        g_jobs.jobs[i].id = 0;
-        g_jobs.jobs[i].pid = 0;
-        g_jobs.jobs[i].cmd = NULL;
-        g_jobs.jobs[i].status = JOB_DONE;
-        g_jobs.jobs[i].exit_code = 0;
-    }
-    g_jobs.count = 0;
-}
-
 static int find_slot(void)
 {
     for (int i = 0; i < MAX_JOBS; i++) {

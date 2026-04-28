@@ -1,0 +1,72 @@
+/*
+** EPITECH PROJECT, 2026
+** 42sh
+** File description:
+** job_wait
+*/
+
+#include "42sh/job_control.h"
+
+static void handle_job_done(job_t *job, int status)
+{
+    job->status = JOB_DONE;
+
+    if (WIFEXITED(status)) {
+        job->exit_code = WEXITSTATUS(status);
+    } else {
+        job->exit_code = 1;
+    }
+    jobs_remove(job->id);
+}
+
+void jobs_update_all(void)
+{
+    int   status;
+    pid_t pid;
+    job_t *job;
+
+    while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
+        job = find_jobs_pid(pid);
+        if (!job)
+            continue;
+        if (WIFSTOPPED(status))
+            job->status = JOB_STOPPED;
+        if (WIFEXITED(status) || WIFSIGNALED(status))
+            handle_job_done(job, status);
+    }
+}
+
+static void handle_job_exit(job_t *job, int status)
+{
+    if (WIFEXITED(status)) {
+        job->exit_code = WEXITSTATUS(status);
+    } else {
+        job->exit_code = 1;
+    }
+    job->status = JOB_DONE;
+    jobs_remove(job->id);
+}
+
+void job_wait_fg(pid_t pid)
+{
+    int    status;
+    pid_t  ret;
+    job_t *job;
+
+    tcsetpgrp(STDIN_FILENO, pid);
+    while (1) {
+        ret = waitpid(pid, &status, WUNTRACED);
+        if (ret != -1 || errno != EINTR)
+            break;
+        }
+    tcsetpgrp(STDIN_FILENO, getpgrp());
+    if (ret == -1)
+        return;
+    job = find_jobs_pid(pid);
+    if (!job)
+        return;
+    if (WIFSTOPPED(status)) {
+        job->status = JOB_STOPPED;
+    } else
+        handle_job_exit(job, status);
+}
