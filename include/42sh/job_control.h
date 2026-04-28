@@ -46,4 +46,6 @@ char   *job_status_str(job_status_t status);
 void job_wait_fg(pid_t pid);
 void jobs_update_all(void);
 
+pid_t job_launch(char **argv, int background);
+
 #endif /* !JOB_CONTROL_H_ */
