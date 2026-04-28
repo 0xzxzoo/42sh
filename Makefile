@@ -43,7 +43,7 @@ SRC_NO_MAIN =   $(filter-out src/my_sh.c, $(SRC))
 
 LIB 	=	lib/my/libmy.a
 
-CC	=	gcc
+CC	=	epiclang
 
 CFLAGS	+=	-I./include -I./lib/my
 
