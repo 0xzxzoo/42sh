@@ -43,7 +43,7 @@ SRC_NO_MAIN =   $(filter-out src/my_sh.c, $(SRC))
 
 LIB 	=	lib/my/libmy.a
 
-CC	=	epiclang
+CC	=	gcc
 
 CFLAGS	+=	-I./include -I./lib/my
 
@@ -80,5 +80,5 @@ fclean:	clean
 
 re:	fclean all
 
-.PHONY:	all clean fclean re
+.PHONY:	all clean fclean re tests_run
 .NOTPARALLEL: re

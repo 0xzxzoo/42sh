@@ -24,18 +24,19 @@ pid_t job_launch(job_list_t *jobs, char **argv, char **env, int background)
 {
     pid_t pid = fork();
     int job_id;
+    job_t *job;
 
-    if (pid < 0) {
-        perror("fork");
-        return -1;
-    }
     if (pid == 0)
         job_child_process(argv, env);
     setpgid(pid, pid);
     job_id = jobs_add(jobs, pid, argv[0]);
-    if (background)
+    if (background) {
         my_printf("[%d] %d\n", job_id, pid);
-    else
-        job_wait_fg(jobs, pid);
-    return pid;
+        return 0;
+    }
+    job_wait_fg(jobs, pid);
+    job = find_jobs_pid(jobs, pid);
+    if (job)
+        return job->exit_code;
+    return 0;
 }
