@@ -36,17 +36,6 @@ void jobs_update_all(void)
     }
 }
 
-static void handle_job_exit(job_t *job, int status)
-{
-    if (WIFEXITED(status)) {
-        job->exit_code = WEXITSTATUS(status);
-    } else {
-        job->exit_code = 1;
-    }
-    job->status = JOB_DONE;
-    jobs_remove(job->id);
-}
-
 void job_wait_fg(pid_t pid)
 {
     int    status;
@@ -58,7 +47,7 @@ void job_wait_fg(pid_t pid)
         ret = waitpid(pid, &status, WUNTRACED);
         if (ret != -1 || errno != EINTR)
             break;
-        }
+    }
     tcsetpgrp(STDIN_FILENO, getpgrp());
     if (ret == -1)
         return;
@@ -68,5 +57,5 @@ void job_wait_fg(pid_t pid)
     if (WIFSTOPPED(status)) {
         job->status = JOB_STOPPED;
     } else
-        handle_job_exit(job, status);
+        handle_job_done(job, status);
 }

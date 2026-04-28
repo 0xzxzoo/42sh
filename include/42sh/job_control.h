@@ -9,6 +9,7 @@
 #define JOB_CONTROL_H_
 
     #include <sys/types.h>
+    #include <signal.h>
     #include <sys/wait.h>
     #include <stdio.h>
     #include <errno.h>
