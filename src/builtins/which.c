@@ -8,7 +8,7 @@
 #include "42sh/my_shell.h"
 #include "my.h"
 
-int my_which(char **args, char ***env)
+int my_which(job_list_t *jobs, char **args, char ***env)
 {
     int val = 0;
     char *cmd_path = NULL;

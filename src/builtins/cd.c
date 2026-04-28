@@ -54,7 +54,7 @@ static int execute_cd(char *dir, oldpwd_t **oldpwd_list)
     return 0;
 }
 
-int my_cd(char **args, char ***env)
+int my_cd(job_list_t *jobs, char **args, char ***env)
 {
     oldpwd_t *oldpwd_list;
     char *dir = args[1];

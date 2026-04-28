@@ -7,7 +7,7 @@
 
 #ifndef AST_H_
     #define AST_H_
-
+    #include "job_control.h"
 typedef enum node_type_e {
     NODE_CMD,
     NODE_PIPE,
@@ -29,6 +29,8 @@ typedef struct ast_node_s {
     struct ast_node_s *right;
 } ast_node_t;
 
+typedef struct job_list_s job_list_t;
+
 ast_node_t *create_node(node_type_t type, char *cmd);
 void free_ast(ast_node_t *node);
 char *my_strndup(char *str, int n);
@@ -41,13 +43,13 @@ ast_node_t *parse_and_or(char *str);
 ast_node_t *parse_pipe(char *str);
 ast_node_t *parse_redir(char *str);
 ast_node_t *parse_cmd(char *str);
-int exec_ast(ast_node_t *node, char ***env);
-int exec_pipe_node(ast_node_t *node, char ***env);
-int exec_and_or(ast_node_t *node, char ***env);
-int process_ast_line(char *line, char ***env);
-int exec_redir_out(ast_node_t *node, char ***env);
-int exec_redir_append(ast_node_t *node, char ***env);
-int exec_redir_in(ast_node_t *node, char ***env);
-int exec_redir_heredoc(ast_node_t *node, char ***env);
+int exec_ast(ast_node_t *node, char ***env, job_list_t *jobs);
+int exec_pipe_node(ast_node_t *node, char ***env, job_list_t *jobs);
+int exec_and_or(ast_node_t *node, char ***env, job_list_t *jobs);
+int process_ast_line(char *line, char ***env, job_list_t *jobs);
+int exec_redir_out(ast_node_t *node, char ***env, job_list_t *jobs);
+int exec_redir_append(ast_node_t *node, char ***env, job_list_t *jobs);
+int exec_redir_in(ast_node_t *node, char ***env, job_list_t *jobs);
+int exec_redir_heredoc(ast_node_t *node, char ***env, job_list_t *jobs);
 
 #endif /* !AST_H_ */

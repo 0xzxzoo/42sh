@@ -64,7 +64,7 @@ static int find_all_in_path(const char *cmd, char **env)
     return found;
 }
 
-int my_where(char **args, char ***env)
+int my_where(job_list_t *jobs, char **args, char ***env)
 {
     int val = 0;
 
