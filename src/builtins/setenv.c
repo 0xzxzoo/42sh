@@ -89,7 +89,7 @@ static void update_or_add_env(char ***env, char *name, char *value)
     *env = new_env;
 }
 
-int my_setenv(char **args, char ***env)
+int my_setenv(job_list_t *jobs, char **args, char ***env)
 {
     int check = check_setenv_args(args);
 

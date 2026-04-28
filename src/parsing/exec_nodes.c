@@ -9,23 +9,23 @@
 #include "42sh/ast.h"
 #include "my.h"
 
-static void child_left(ast_node_t *n, int fd[2], char ***env)
+static void child_left(ast_node_t *n, int fd[2], char ***env, job_list_t *jobs)
 {
     dup2(fd[1], 1);
     close(fd[0]);
     close(fd[1]);
-    exit(exec_ast(n, env));
+    exit(exec_ast(n, env, jobs));
 }
 
-static void child_right(ast_node_t *n, int fd[2], char ***env)
+static void child_right(ast_node_t *n, int fd[2], char ***env, job_list_t *jobs)
 {
     dup2(fd[0], 0);
     close(fd[0]);
     close(fd[1]);
-    exit(exec_ast(n, env));
+    exit(exec_ast(n, env, jobs));
 }
 
-int exec_pipe_node(ast_node_t *node, char ***env)
+int exec_pipe_node(ast_node_t *node, char ***env, job_list_t *jobs)
 {
     int fd[2];
     int status;
@@ -35,10 +35,10 @@ int exec_pipe_node(ast_node_t *node, char ***env)
     pipe(fd);
     p1 = fork();
     if (p1 == 0)
-        child_left(node->left, fd, env);
+        child_left(node->left, fd, env, jobs);
     p2 = fork();
     if (p2 == 0)
-        child_right(node->right, fd, env);
+        child_right(node->right, fd, env, jobs);
     close(fd[0]);
     close(fd[1]);
     waitpid(p1, NULL, 0);
@@ -46,13 +46,13 @@ int exec_pipe_node(ast_node_t *node, char ***env)
     return WEXITSTATUS(status);
 }
 
-int exec_and_or(ast_node_t *node, char ***env)
+int exec_and_or(ast_node_t *node, char ***env, job_list_t *jobs)
 {
-    int status = exec_ast(node->left, env);
+    int status = exec_ast(node->left, env, jobs);
 
     if (node->type == NODE_AND && status == 0)
-        return exec_ast(node->right, env);
+        return exec_ast(node->right, env, jobs);
     if (node->type == NODE_OR && status != 0)
-        return exec_ast(node->right, env);
+        return exec_ast(node->right, env, jobs);
     return status;
 }

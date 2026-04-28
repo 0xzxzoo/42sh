@@ -7,72 +7,78 @@
 
 #include "42sh/job_control.h"
 
-job_list_t g_jobs = {0};
-
-static int find_slot(void)
+static int find_slot(job_list_t *jobs)
 {
     for (int i = 0; i < MAX_JOBS; i++) {
-        if (g_jobs.jobs[i].id == 0)
+        if (jobs->jobs[i].id == 0)
             return i;
     }
     return -1;
 }
 
-static int next_id(void)
+static int next_id(job_list_t *jobs)
 {
     int max = 0;
 
     for (int i = 0; i < MAX_JOBS; i++) {
-        if (g_jobs.jobs[i].id > max)
-            max = g_jobs.jobs[i].id;
+        if (jobs->jobs[i].id > max)
+            max = jobs->jobs[i].id;
     }
     return max + 1;
 }
 
-int jobs_add(pid_t pid, char *cmd)
+int jobs_add(job_list_t *jobs, pid_t pid, char *cmd)
 {
-    int slot = find_slot();
+    int slot = find_slot(jobs);
+    int new_id = next_id(jobs);
 
     if (slot == -1)
         return -1;
-    g_jobs.jobs[slot].id = next_id();
-    g_jobs.jobs[slot].pid = pid;
-    g_jobs.jobs[slot].cmd = my_strdup(cmd);
-    g_jobs.jobs[slot].status = JOB_RUNNING;
-    g_jobs.jobs[slot].exit_code = 0;
-    g_jobs.count++;
-    return g_jobs.jobs[slot].id;
+    jobs->jobs[slot].id = new_id;
+    jobs->jobs[slot].pid = pid;
+    jobs->jobs[slot].cmd = my_strdup(cmd);
+    jobs->jobs[slot].status = JOB_RUNNING;
+    jobs->jobs[slot].exit_code = 0;
+    jobs->previous = jobs->current;
+    jobs->current = slot;
+    jobs->count++;
+    return new_id;
 }
 
-void jobs_remove(int id)
+static void clear_job(job_list_t *jobs, int i)
+{
+    if (jobs->jobs[i].cmd)
+        free(jobs->jobs[i].cmd);
+    jobs->jobs[i].cmd = NULL;
+    jobs->jobs[i].id = 0;
+    jobs->jobs[i].pid = 0;
+    jobs->count--;
+}
+
+void jobs_remove(job_list_t *jobs, int id)
 {
     for (int i = 0; i < MAX_JOBS; i++) {
-        if (g_jobs.jobs[i].id == id) {
-            if (g_jobs.jobs[i].cmd)
-                free(g_jobs.jobs[i].cmd);
-            g_jobs.jobs[i].cmd = NULL;
-            g_jobs.jobs[i].id = 0;
-            g_jobs.jobs[i].pid = 0;
-            g_jobs.count--;
+        if (jobs->jobs[i].id == id) {
+            clear_job(jobs, i);
             return;
         }
     }
 }
 
-job_t *find_jobs_id(int id)
+job_t *find_jobs_id(job_list_t *jobs, int id)
 {
     for (int i = 0; i < MAX_JOBS; i++) {
-        if (g_jobs.jobs[i].id == id)
-            return &g_jobs.jobs[i];
+        if (jobs->jobs[i].id == id)
+            return &jobs->jobs[i];
     }
     return NULL;
 }
 
-job_t *find_jobs_pid(pid_t pid)
+job_t *find_jobs_pid(job_list_t *jobs, pid_t pid)
 {
     for (int i = 0; i < MAX_JOBS; i++) {
-        if (g_jobs.jobs[i].pid == pid)
-            return &g_jobs.jobs[i];
+        if (jobs->jobs[i].pid == pid)
+            return &jobs->jobs[i];
     }
     return NULL;
 }

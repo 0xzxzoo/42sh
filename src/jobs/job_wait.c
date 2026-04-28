@@ -7,39 +7,39 @@
 
 #include "42sh/job_control.h"
 
-static void handle_job_done(job_t *job, int status)
+static void handle_job_done(job_list_t *jobs, job_t *job, int status)
 {
     job->status = JOB_DONE;
-
-    if (WIFEXITED(status)) {
+    if (WIFEXITED(status))
         job->exit_code = WEXITSTATUS(status);
-    } else {
+    else
         job->exit_code = 1;
-    }
-    jobs_remove(job->id);
 }
 
-void jobs_update_all(void)
+void jobs_update_all(job_list_t *jobs)
 {
-    int   status;
+    int status;
     pid_t pid;
     job_t *job;
 
-    while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
-        job = find_jobs_pid(pid);
+    while (1) {
+        pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
+        if (pid <= 0)
+            break;
+        job = find_jobs_pid(jobs, pid);
         if (!job)
             continue;
         if (WIFSTOPPED(status))
             job->status = JOB_STOPPED;
         if (WIFEXITED(status) || WIFSIGNALED(status))
-            handle_job_done(job, status);
+            handle_job_done(jobs, job, status);
     }
 }
 
-void job_wait_fg(pid_t pid)
+void job_wait_fg(job_list_t *jobs, pid_t pid)
 {
-    int    status;
-    pid_t  ret;
+    int status;
+    pid_t ret;
     job_t *job;
 
     tcsetpgrp(STDIN_FILENO, pid);
@@ -51,11 +51,11 @@ void job_wait_fg(pid_t pid)
     tcsetpgrp(STDIN_FILENO, getpgrp());
     if (ret == -1)
         return;
-    job = find_jobs_pid(pid);
+    job = find_jobs_pid(jobs, pid);
     if (!job)
         return;
-    if (WIFSTOPPED(status)) {
+    if (WIFSTOPPED(status))
         job->status = JOB_STOPPED;
-    } else
-        handle_job_done(job, status);
+    else
+        handle_job_done(jobs, job, status);
 }
