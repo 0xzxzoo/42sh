@@ -58,5 +58,6 @@ int my_fg(job_list_t *jobs, char **args, char ***env);
 int get_job_id(job_list_t *jobs, char *arg);
 void my_put_error(const char *str);
 char *env_get(char ***env, const char *name);
+char **apply_globbing(char **args);
 
 #endif /* !MY_SHELL_H_ */
