@@ -22,13 +22,15 @@ void jobs_update_all(job_list_t *jobs)
     pid_t pid;
     job_t *job;
 
-    while (1) {
-        pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
-        if (pid <= 0)
-            break;
-        job = find_jobs_pid(jobs, pid);
-        if (!job)
+    for (int i = 0; i < MAX_JOBS; i++) {
+        if (jobs->jobs[i].id == 0)
             continue;
+        if (jobs->jobs[i].status != JOB_RUNNING)
+            continue;
+        pid = waitpid(jobs->jobs[i].pid, &status, WNOHANG | WUNTRACED);
+        if (pid <= 0)
+            continue;
+        job = &jobs->jobs[i];
         if (WIFSTOPPED(status))
             job->status = JOB_STOPPED;
         if (WIFEXITED(status) || WIFSIGNALED(status))
