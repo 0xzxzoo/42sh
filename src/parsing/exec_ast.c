@@ -42,15 +42,36 @@ static int handle_args(char **args, char ***env, job_list_t *jobs)
     return -1;
 }
 
+static int launch_cmd(char **args, char ***env)
+{
+    int ret = 0;
+    pid_t pid = fork();
+
+    if (pid == 0)
+        exit(exec_cmd(args, *env));
+    waitpid(pid, &ret, 0);
+    free_array(args);
+    return WEXITSTATUS(ret);
+}
+
 static int execute_single_cmd(char *cmd, char ***env, job_list_t *jobs)
 {
-    int background = 0;
-    char **args = prepare_args(cmd, &background);
-    int status = handle_args(args, env, jobs);
+    char **args = advanced_split(cmd);
+    int ret = 0;
 
-    if (status != -1)
-        return status;
-    return job_launch(jobs, args, *env, background);
+    if (!args || !args[0]) {
+        free_array(args);
+        return 0;
+    }
+    clean_quotes(args);
+    args = apply_globbing(args);
+    if (!args)
+        return 1;
+    if (detect_cmd(args, &ret, env, jobs)) {
+        free_array(args);
+        return ret;
+    }
+    return launch_cmd(args, env);
 }
 
 static int exec_cmd_node(ast_node_t *node, char ***env, job_list_t *jobs)
