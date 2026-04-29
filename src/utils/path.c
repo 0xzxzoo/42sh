@@ -93,14 +93,21 @@ char *find_command_in_path(const char *command, char **env)
 
 char *get_cmd_path(char **args, char **env)
 {
-    char *cmd_path = NULL;
+    char *cmd_path;
 
-    for (int i = 0; args[0][i] != '\0'; i++) {
-        if (args[0][i] == '/')
+    if (find_op(args[0], "/") != -1 || args[0][0] == '/') {
+        if (access(args[0], X_OK) == 0)
             return my_strdup(args[0]);
+        put_error(args[0]);
+        put_error(": Command not found.\n");
+        return NULL;
     }
+    if (access(args[0], X_OK) == 0)
+        return my_strdup(args[0]);
     cmd_path = find_command_in_path(args[0], env);
-    if (!cmd_path)
-        my_printf("%s: Command not found.\n", args[0]);
+    if (!cmd_path) {
+        put_error(args[0]);
+        put_error(": Command not found.\n");
+    }
     return cmd_path;
 }

@@ -48,11 +48,17 @@ int exec_pipe_node(ast_node_t *node, char ***env)
 
 int exec_and_or(ast_node_t *node, char ***env)
 {
-    int status = exec_ast(node->left, env);
+    int left_status = exec_ast(node->left, env);
 
-    if (node->type == NODE_AND && status == 0)
-        return exec_ast(node->right, env);
-    if (node->type == NODE_OR && status != 0)
-        return exec_ast(node->right, env);
-    return status;
+    if (node->type == NODE_AND) {
+        if (left_status == 0)
+            return exec_ast(node->right, env);
+        return left_status;
+    }
+    if (node->type == NODE_OR) {
+        if (left_status != 0)
+            return exec_ast(node->right, env);
+        return left_status;
+    }
+    return 0;
 }
