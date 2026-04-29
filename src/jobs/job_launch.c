@@ -20,20 +20,36 @@ static void job_child_process(char **argv, char **env)
     _exit(127);
 }
 
+static int launch_background(job_list_t *jobs, pid_t pid, char **argv)
+{
+    int job_id = jobs_add(jobs, pid, argv[0]);
+
+    my_printf("[%d] %d\n", job_id, pid);
+    return 0;
+}
+
+static int launch_foreground(pid_t pid)
+{
+    int status = 0;
+
+    tcsetpgrp(STDIN_FILENO, pid);
+    waitpid(pid, &status, WUNTRACED);
+    tcsetpgrp(STDIN_FILENO, getpgrp());
+    if (WIFEXITED(status))
+        return WEXITSTATUS(status);
+    if (WIFSIGNALED(status))
+        return 1;
+    return 0;
+}
+
 pid_t job_launch(job_list_t *jobs, char **argv, char **env, int background)
 {
     pid_t pid = fork();
-    int job_id;
-    job_t *job;
 
     if (pid == 0)
         job_child_process(argv, env);
     setpgid(pid, pid);
-    if (background) {
-        job_id = jobs_add(jobs, pid, argv[0]);
-        my_printf("[%d] %d\n", job_id, pid);
-        return 0;
-    }
-    job_wait_fg(jobs, pid);
-    return 0;
+    if (background)
+        return launch_background(jobs, pid, argv);
+    return launch_foreground(pid);
 }
