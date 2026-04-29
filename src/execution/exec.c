@@ -43,20 +43,22 @@ static int execute_command(char *cmd_path, char **args, char **env)
     pid_t pid = fork();
     int status = 0;
 
-    if (pid == -1) return 84;
-    if (pid == 0) {
-        if (execve(cmd_path, args, env) == -1) {
-            if (errno == ENOEXEC) {
-                write(2, cmd_path, my_strlen(cmd_path));
-                write(2, ": Exec format error. Binary file not executable.\n", 49);
-            } else
-                perror(cmd_path);
-            exit(1);
-        }
+    if (pid == -1)
+        return 84;
+    if (pid != 0) {
+        waitpid(pid, &status, 0);
+        check_status(status);
+        return WIFEXITED(status) ? WEXITSTATUS(status) : 1;
     }
-    waitpid(pid, &status, 0);
-    check_status(status);
-    return WIFEXITED(status) ? WEXITSTATUS(status) : 1;
+    execve(cmd_path, args, env);
+    if (errno == ENOEXEC) {
+        write(2, cmd_path, my_strlen(cmd_path));
+        write(2, ": Exec format error. ", 21);
+        write(2, "Binary file not executable.\n", 28);
+        exit(1);
+    }
+    perror(cmd_path);
+    exit(1);
 }
 
 static int check_directory(char *path)
