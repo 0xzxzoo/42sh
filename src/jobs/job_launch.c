@@ -29,14 +29,11 @@ pid_t job_launch(job_list_t *jobs, char **argv, char **env, int background)
     if (pid == 0)
         job_child_process(argv, env);
     setpgid(pid, pid);
-    job_id = jobs_add(jobs, pid, argv[0]);
     if (background) {
+        job_id = jobs_add(jobs, pid, argv[0]);
         my_printf("[%d] %d\n", job_id, pid);
         return 0;
     }
     job_wait_fg(jobs, pid);
-    job = find_jobs_pid(jobs, pid);
-    if (job)
-        return job->exit_code;
     return 0;
 }
