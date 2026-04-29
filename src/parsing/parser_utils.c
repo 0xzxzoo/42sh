@@ -56,11 +56,12 @@ int find_op(char *str, char *op)
 char *trim_spaces(char *str)
 {
     int s = 0;
-    int e = my_strlen(str) - 1;
+    int e;
     char *res;
 
     if (!str)
         return NULL;
+    e = my_strlen(str) - 1;
     while (str[s] == ' ' || str[s] == '\t' || str[s] == '\n')
         s++;
     while (e >= s && (str[e] == ' ' || str[e] == '\t' || str[e] == '\n'))

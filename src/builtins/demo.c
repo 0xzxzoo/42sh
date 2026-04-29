@@ -8,7 +8,7 @@
 #include "42sh/my_shell.h"
 #include "my.h"
 
-int my_info(char **args, char ***env)
+int my_info(job_list_t *jobs, char **args, char ***env)
 {
     struct utsname info;
 

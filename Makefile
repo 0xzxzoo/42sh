@@ -10,6 +10,8 @@ SRC	=	src/my_sh.c	\
 		src/builtins/setenv.c	\
 		src/builtins/unsetenv.c	\
 		src/builtins/where.c	\
+		src/builtins/which.c	\
+		src/builtins/jobs.c	\
 		src/execution/exec.c	\
 		src/execution/exec_redir.c	\
 		src/parsing/detect.c	\
@@ -22,14 +24,22 @@ SRC	=	src/my_sh.c	\
 		src/parsing/parser_utils.c	\
 		src/parsing/parser_redir.c	\
 		src/parsing/word_array.c \
+		src/jobs/job_utils.c	\
+		src/jobs/job_launch.c 	\
+		src/jobs/job_list.c 	\
+		src/jobs/job_wait.c	\
 		src/utils/oldpwd.c	\
 		src/utils/path.c	\
 		src/builtins/exit.c	\
+		src/builtins/fg.c	\
+		src/builtins/bg.c	\
 		src/builtins/demo.c
 
 OBJ	=	$(SRC:.c=.o)
 
 NAME	=	42sh
+
+SRC_NO_MAIN =   $(filter-out src/my_sh.c, $(SRC))
 
 LIB 	=	lib/my/libmy.a
 
@@ -47,6 +57,14 @@ $(LIB):
 $(NAME):	$(LIB) $(OBJ)
 	$(CC) -o $(NAME) $(CFLAGS) $(OBJ) $(LDFLAGS)
 
+tests_run: fclean $(LIB)
+	$(CC) -o unit_tests $(SRC_NO_MAIN) tests/test_builtins.c 	tests/test_utils.c \
+	tests/parsing/test_parser.c	tests/parsing/test_exec.c tests/parsing/test_parsing_utils.c \
+	tests/parsing/test_word_array.c \
+		$(CFLAGS) $(LDFLAGS) --coverage -lcriterion
+	./unit_tests
+	gcovr . --root . --exclude tests/ --gcov-executable "llvm-cov gcov" --txt-metric branch --print-summary
+
 clean:
 	rm -f $(OBJ)
 	make clean -C lib/my
@@ -55,8 +73,12 @@ fclean:	clean
 	make fclean -C lib/my
 	rm -f lib/libmy.a
 	rm -f $(NAME)
+	rm -f unit_tests
+	find . -name "*.gcda" -delete
+	find . -name "*.gcno" -delete
+	find . -name "unit_tests-*.gcda" -delete
 
 re:	fclean all
 
-.PHONY:	all clean fclean re
-.NOPARALLEL: re
+.PHONY:	all clean fclean re tests_run
+.NOTPARALLEL: re

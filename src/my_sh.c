@@ -6,7 +6,17 @@
 */
 
 #include "42sh/my_shell.h"
+#include "42sh/job_control.h"
 #include "my.h"
+
+static void init_signals(void)
+{
+    signal(SIGINT, SIG_IGN);
+    signal(SIGQUIT, SIG_IGN);
+    signal(SIGTSTP, SIG_IGN);
+    signal(SIGTTIN, SIG_IGN);
+    signal(SIGTTOU, SIG_IGN);
+}
 
 static char **copy_env(char **env)
 {
@@ -26,12 +36,17 @@ static char **copy_env(char **env)
 
 int main(int argc, char **argv, char **env)
 {
+    job_list_t jobs = {0};
     char *line;
     char **my_env = copy_env(env);
 
+    init_signals();
+    jobs_init(&jobs);
     line = read_line();
     while (line) {
-        process_ast_line(line, &my_env);
+        jobs_update_all(&jobs);
+        notify_done_jobs(&jobs);
+        process_ast_line(line, &my_env, &jobs);
         free(line);
         line = read_line();
     }
