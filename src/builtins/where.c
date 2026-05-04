@@ -32,15 +32,6 @@ static char *build_path(char *dir, const char *cmd)
     return res;
 }
 
-static void check_path(char *full_path, int *found)
-{
-    char **paths;
-
-    if (full_path && access(full_path, X_OK) == 0) {
-        my_printf("%s\n", full_path);
-    }
-}
-
 static int find_all_in_path(const char *cmd, char **env)
 {
     char *path_env = get_path_env(env);
@@ -55,11 +46,12 @@ static int find_all_in_path(const char *cmd, char **env)
         return 0;
     for (int i = 0; paths[i] != NULL; i++) {
         full_path = build_path(paths[i], cmd);
-        check_path(full_path, &found);
-        found = 1;
-    }
-    if (full_path)
+        if (full_path && access(full_path, X_OK) == 0) {
+            my_printf("%s\n", full_path);
+            found = 1;
+        }
         free(full_path);
+    }
     free_array(paths);
     return found;
 }
@@ -68,12 +60,15 @@ int my_where(job_list_t *jobs, char **args, char ***env)
 {
     int val = 0;
 
+    (void) jobs;
     if (!args[1]) {
         put_error("where: Too few arguments.\n");
         return 1;
     }
     for (int i = 1; args[i] != NULL; i++) {
         if (!find_all_in_path(args[i], *env)) {
+            put_error(args[i]);
+            put_error(": Command not found.\n");
             val = 1;
         }
     }
