@@ -60,7 +60,8 @@ static int execute_single_cmd(char *cmd, char ***env, job_list_t *jobs)
     int ret = 0;
 
     if (!args || !args[0]) {
-        free_array(args);
+        if (args)
+            free_array(args);
         return 0;
     }
     clean_quotes(args);
