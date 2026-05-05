@@ -11,9 +11,18 @@
 
 void update_last_status(int status, char ***env)
 {
-    char *s_str = my_itoa(status);
-    char *args[4] = {"setenv", "LAST_STATUS", s_str, NULL};
+    char *s_str;
+    char *args[4];
 
+    if (!env || !(*env))
+        return;
+    s_str = my_itoa(status);
+    if (!s_str)
+        return;
+    args[0] = "setenv";
+    args[1] = "LAST_STATUS";
+    args[2] = s_str;
+    args[3] = NULL;
     my_setenv(NULL, args, env);
     free(s_str);
 }
@@ -24,6 +33,8 @@ static char *get_env_value(char *var, char **env)
 
     if (len == 0)
         return my_strdup("$");
+    if (!env)
+        return my_strdup("");
     for (int i = 0; env[i]; i++) {
         if (my_strncmp(env[i], var, len) == 0 && env[i][len] == '=')
             return my_strdup(env[i] + len + 1);

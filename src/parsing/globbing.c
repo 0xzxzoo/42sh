@@ -44,10 +44,12 @@ char **apply_globbing(char **args)
     if (!n_args)
         return NULL;
     for (int i = 0; args[i]; i++) {
-        if (glob(args[i], GLOB_NOCHECK | GLOB_NOMAGIC, NULL, &g) == 0)
+        if (glob(args[i], GLOB_NOCHECK | GLOB_NOMAGIC, NULL, &g) == 0) {
             fill_glob(n_args, &idx, &g);
-        else
-            n_args[idx++] = my_strdup(args[i]);
+        } else {
+            n_args[idx] = my_strdup(args[i]);
+            idx++;
+        }
     }
     n_args[idx] = NULL;
     free_array(args);
