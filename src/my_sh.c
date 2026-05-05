@@ -34,22 +34,50 @@ static char **copy_env(char **env)
     return new_env;
 }
 
+static void add_to_history(history_t **head, history_t **cur, char *cmd)
+{
+    history_t *node = malloc(sizeof(history_t));
+
+    if (!node)
+        return;
+    node->cmd = my_strdup(cmd);
+    node->next = NULL;
+    node->prev = *cur;
+    if (*cur)
+        (*cur)->next = node;
+    else
+        *head = node;
+    *cur = node;
+}
+
+static void shell_loop(char **my_env, job_list_t *jobs,
+    history_t **hist_head, history_t **hist_cur)
+{
+    char *line = read_line(hist_cur);
+
+    while (line) {
+        jobs_update_all(jobs);
+        notify_done_jobs(jobs);
+        if (my_strlen(line) > 0)
+            add_to_history(hist_head, hist_cur, line);
+        process_ast_line(line, &my_env, jobs);
+        free(line);
+        line = read_line(hist_cur);
+    }
+    free_array(my_env);
+}
+
 int main(int argc, char **argv, char **env)
 {
     job_list_t jobs = {0};
-    char *line;
     char **my_env = copy_env(env);
+    history_t *hist_head = NULL;
+    history_t *hist_cur = NULL;
 
+    (void)argc;
+    (void)argv;
     init_signals();
     jobs_init(&jobs);
-    line = read_line();
-    while (line) {
-        jobs_update_all(&jobs);
-        notify_done_jobs(&jobs);
-        process_ast_line(line, &my_env, &jobs);
-        free(line);
-        line = read_line();
-    }
-    free_array(my_env);
+    shell_loop(my_env, &jobs, &hist_head, &hist_cur);
     return 0;
 }

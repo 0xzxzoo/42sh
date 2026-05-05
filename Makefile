@@ -29,6 +29,8 @@ SRC	=	src/my_sh.c	\
 		src/jobs/job_launch.c 	\
 		src/jobs/job_list.c 	\
 		src/jobs/job_wait.c	\
+		src/key_management/keymanage.c	\
+		src/key_management/termios_setup.c	\
 		src/utils/oldpwd.c	\
 		src/utils/path.c	\
 		src/builtins/exit.c	\

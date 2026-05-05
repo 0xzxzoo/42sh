@@ -17,10 +17,17 @@
     #include <unistd.h>
     #include <sys/utsname.h>
     #include <signal.h>
+    #include <termios.h>
     #include <fcntl.h>
     #define PATH_MAX 4096
 
 typedef struct job_list_s job_list_t;
+
+typedef struct history_s {
+    char *cmd;
+    struct history_s *next;
+    struct history_s *prev;
+} history_t;
 
 typedef struct oldpwd_s {
     char *path;
@@ -35,7 +42,7 @@ typedef struct builtin_s {
 int detect_cmd(char **args, int *return_val, char ***env, job_list_t *jobs);
 int exec_cmd(char **args, char **env);
 void print_tag(void);
-char *read_line(void);
+char *read_line(history_t **hist);
 void free_array(char **array);
 void check_status(int status);
 char *get_full_path(char *paths, const char *command);
@@ -59,5 +66,8 @@ int get_job_id(job_list_t *jobs, char *arg);
 void my_put_error(const char *str);
 char *env_get(char ***env, const char *name);
 char **apply_globbing(char **args);
+void set_raw_mode(struct termios *orig_termios);
+void restore_termios(struct termios *orig_termios);
+int check_escape_sequence(char c, history_t **hist, char **current_input);
 
 #endif /* !MY_SHELL_H_ */
