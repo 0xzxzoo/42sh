@@ -30,11 +30,15 @@ typedef struct job_s {
     int exit_code;
 } job_t;
 
+
+typedef struct oldpwd_s oldpwd_t;
+
 typedef struct job_list_s {
     job_t jobs[MAX_JOBS];
     int count;
     int current;
     int previous;
+    oldpwd_t *oldpwd;
 } job_list_t;
 
 void notify_done_jobs(job_list_t *jobs);
