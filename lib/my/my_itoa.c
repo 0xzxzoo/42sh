@@ -6,31 +6,44 @@
 */
 
 #include "my.h"
-#include <stddef.h>
 #include <stdlib.h>
+
+static int get_nb_len(long n)
+{
+    int len = 0;
+
+    if (n == 0)
+        return 1;
+    if (n < 0) {
+        len++;
+        n = -n;
+    }
+    while (n > 0) {
+        len++;
+        n /= 10;
+    }
+    return len;
+}
 
 char *my_itoa(int nb)
 {
-    char *str = malloc(12);
-    int i = 0;
     long n = nb;
+    int len = get_nb_len(n);
+    char *str = malloc(len + 1);
 
-    if (!str) return NULL;
-    if (n == 0) str[i++] = '0';
+    if (!str)
+        return NULL;
+    str[len] = '\0';
+    if (n == 0)
+        str[0] = '0';
     if (n < 0) {
-        str[i++] = '-';
+        str[0] = '-';
         n = -n;
     }
-    int start = i;
     while (n > 0) {
-        str[i++] = (n % 10) + '0';
+        len--;
+        str[len] = (n % 10) + '0';
         n /= 10;
-    }
-    str[i] = '\0';
-    for (int j = 0; j < (i - start) / 2; j++) {
-        char tmp = str[start + j];
-        str[start + j] = str[i - 1 - j];
-        str[i - 1 - j] = tmp;
     }
     return str;
 }
