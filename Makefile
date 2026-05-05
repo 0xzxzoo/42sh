@@ -25,6 +25,7 @@ SRC	=	src/my_sh.c	\
 		src/parsing/parser_redir.c	\
 		src/parsing/word_array.c \
 		src/parsing/globbing.c \
+		src/parsing/variables.c \
 		src/jobs/job_utils.c	\
 		src/jobs/job_launch.c 	\
 		src/jobs/job_list.c 	\

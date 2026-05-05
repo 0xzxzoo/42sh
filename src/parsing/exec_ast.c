@@ -51,6 +51,7 @@ static int launch_cmd(char **args, char ***env)
         exit(exec_cmd(args, *env));
     waitpid(pid, &ret, 0);
     free_array(args);
+    last_status_manager(WEXITSTATUS(ret), 1);
     return WEXITSTATUS(ret);
 }
 
@@ -65,11 +66,15 @@ static int execute_single_cmd(char *cmd, char ***env, job_list_t *jobs)
         return 0;
     }
     clean_quotes(args);
+    args = apply_variables(args, *env);
+    if (!args)
+        return 1;
     args = apply_globbing(args);
     if (!args)
         return 1;
     if (detect_cmd(args, &ret, env, jobs)) {
         free_array(args);
+        last_status_manager(ret, 1);
         return ret;
     }
     return launch_cmd(args, env);

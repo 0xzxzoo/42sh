@@ -60,6 +60,6 @@ void my_put_error(const char *str);
 char *env_get(char ***env, const char *name);
 char **apply_globbing(char **args);
 char **apply_variables(char **args, char **env);
-void set_last_status_manager(int status, int mode);
+int last_status_manager(int status, int mode);
 
 #endif /* !MY_SHELL_H_ */
