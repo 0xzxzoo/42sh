@@ -118,6 +118,89 @@ Test(builtin_cd, invalid_dir_returns_nonzero, .init = cr_redirect_stderr)
     free_env(env);
 }
 
+Test(builtin_cd, dash_no_history_fails, .init = cr_redirect_stderr)
+{
+    char *raw[] = {"HOME=/tmp", "PWD=/", "OLDPWD=", NULL};
+    char **env = make_env(raw);
+    char **args = (char *[]){ "cd", "-", NULL };
+    job_list_t jobs = {0};
+    int ret;
+
+    jobs_init(&jobs);
+    ret = my_cd(&jobs, args, &env);
+    cr_assert_neq(ret, 0, "cd - with no history must fail");
+    free_env(env);
+}
+
+Test(builtin_cd, dash_returns_to_previous_dir)
+{
+    char *raw[] = {"HOME=/tmp", "PWD=/", "OLDPWD=", NULL};
+    char **env = make_env(raw);
+    char **args_tmp = (char *[]){ "cd", "/tmp", NULL };
+    char **args_dash = (char *[]){ "cd", "-", NULL };
+    job_list_t jobs = {0};
+    char buf[4096];
+    int ret;
+
+    jobs_init(&jobs);
+    chdir("/");
+    my_cd(&jobs, args_tmp, &env);
+    ret = my_cd(&jobs, args_dash, &env);
+    cr_assert_eq(ret, 0, "cd - must succeed after a previous cd");
+    cr_assert_str_eq(getcwd(buf, sizeof(buf)), "/");
+    chdir("/");
+    free_env(env);
+}
+
+Test(builtin_cd, records_history_after_each_cd)
+{
+    char *raw[] = {"HOME=/tmp", "PWD=/", "OLDPWD=", NULL};
+    char **env = make_env(raw);
+    char **args_tmp = (char *[]){ "cd", "/tmp", NULL };
+    char **args_root = (char *[]){ "cd", "/", NULL };
+    char **args_dash = (char *[]){ "cd", "-", NULL };
+    job_list_t jobs = {0};
+    char buf[4096];
+
+    jobs_init(&jobs);
+    chdir("/");
+    my_cd(&jobs, args_tmp, &env);
+    my_cd(&jobs, args_root, &env);
+    my_cd(&jobs, args_dash, &env);
+    cr_assert_str_eq(getcwd(buf, sizeof(buf)), "/tmp");
+    chdir("/");
+    free_env(env);
+}
+
+Test(builtin_cd, oldpwd_starts_null_after_init)
+{
+    job_list_t jobs = {0};
+
+    jobs_init(&jobs);
+    cr_assert_null(jobs.oldpwd,
+        "oldpwd must be NULL after jobs_init");
+}
+
+Test(builtin_cd, tilde_with_history_still_works)
+{
+    char *raw[] = {"HOME=/tmp", "PWD=/", "OLDPWD=", NULL};
+    char **env = make_env(raw);
+    char **args_root = (char *[]){ "cd", "/", NULL };
+    char **args_tilde = (char *[]){ "cd", "~", NULL };
+    char **args_dash = (char *[]){ "cd", "-", NULL };
+    job_list_t jobs = {0};
+    char buf[4096];
+
+    jobs_init(&jobs);
+    chdir("/tmp");
+    my_cd(&jobs, args_root, &env);
+    my_cd(&jobs, args_tilde, &env);
+    my_cd(&jobs, args_dash, &env);
+    cr_assert_str_eq(getcwd(buf, sizeof(buf)), "/");
+    chdir("/");
+    free_env(env);
+}
+
 Test(builtin_demo, info_succeeds, .init = cr_redirect_stdout)
 {
     char *raw[] = {NULL};

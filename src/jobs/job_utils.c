@@ -17,6 +17,7 @@ void jobs_init(job_list_t *jobs)
         jobs->jobs[i].exit_code = 0;
     }
     jobs->count = 0;
+    jobs->oldpwd = NULL;
 }
 
 void notify_done_jobs(job_list_t *jobs)
