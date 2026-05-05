@@ -9,13 +9,13 @@
 #include "my.h"
 #include <stdlib.h>
 
-int last_status_manager(int status, int mode)
+void update_last_status(int status, char ***env)
 {
-    static int last_status = 0;
+    char *s_str = my_itoa(status);
+    char *args[4] = {"setenv", "LAST_STATUS", s_str, NULL};
 
-    if (mode == 1)
-        last_status = status;
-    return last_status;
+    my_setenv(NULL, args, env);
+    free(s_str);
 }
 
 static char *get_env_value(char *var, char **env)
@@ -33,8 +33,16 @@ static char *get_env_value(char *var, char **env)
 
 static char *expand_single_arg(char *arg, char **env)
 {
-    if (my_strcmp(arg, "$?") == 0)
-        return my_itoa(last_status_manager(0, 0));
+    char *val;
+
+    if (my_strcmp(arg, "$?") == 0) {
+        val = get_env_value("LAST_STATUS", env);
+        if (val[0] == '\0') {
+            free(val);
+            return my_strdup("0");
+        }
+        return val;
+    }
     if (arg[0] == '$' && arg[1] != '\0')
         return get_env_value(arg + 1, env);
     return my_strdup(arg);

@@ -10,38 +10,6 @@
 #include "42sh/ast.h"
 #include "my.h"
 
-static char **prepare_args(char *cmd, int *background)
-{
-    char *clean = trim_spaces(cmd);
-    int len = my_strlen(clean);
-    char **args;
-
-    if (len > 0 && clean[len - 1] == '&') {
-        clean[len - 1] = '\0';
-        *background = 1;
-    }
-    args = advanced_split(clean);
-    free(clean);
-    return args;
-}
-
-static int handle_args(char **args, char ***env, job_list_t *jobs)
-{
-    int ret = 0;
-
-    if (!args || !args[0]) {
-        if (args)
-            free_array(args);
-        return 0;
-    }
-    clean_quotes(args);
-    if (detect_cmd(args, &ret, env, jobs)) {
-        free_array(args);
-        return ret;
-    }
-    return -1;
-}
-
 static int launch_cmd(char **args, char ***env)
 {
     int ret = 0;
@@ -51,7 +19,7 @@ static int launch_cmd(char **args, char ***env)
         exit(exec_cmd(args, *env));
     waitpid(pid, &ret, 0);
     free_array(args);
-    last_status_manager(WEXITSTATUS(ret), 1);
+    update_last_status(WEXITSTATUS(ret), env);
     return WEXITSTATUS(ret);
 }
 
@@ -67,14 +35,13 @@ static int execute_single_cmd(char *cmd, char ***env, job_list_t *jobs)
     }
     clean_quotes(args);
     args = apply_variables(args, *env);
-    if (!args)
-        return 1;
-    args = apply_globbing(args);
+    if (args)
+        args = apply_globbing(args);
     if (!args)
         return 1;
     if (detect_cmd(args, &ret, env, jobs)) {
         free_array(args);
-        last_status_manager(ret, 1);
+        update_last_status(ret, env);
         return ret;
     }
     return launch_cmd(args, env);
