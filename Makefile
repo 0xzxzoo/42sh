@@ -28,6 +28,7 @@ SRC	=	src/my_sh.c	\
 		src/parsing/variables.c \
 		src/parsing/backtick/backtick_find.c \
 		src/parsing/backtick/backtick_extract.c \
+		src/execution/backtick/backtick_exec.c	\
 		src/jobs/job_utils.c	\
 		src/jobs/job_launch.c 	\
 		src/jobs/job_list.c 	\
@@ -64,7 +65,7 @@ $(NAME):	$(LIB) $(OBJ)
 tests_run: fclean $(LIB)
 	$(CC) -o unit_tests $(SRC_NO_MAIN) tests/test_builtins.c 	tests/test_utils.c \
 	tests/parsing/test_parser.c	tests/parsing/test_exec.c tests/parsing/test_parsing_utils.c \
-	tests/parsing/test_word_array.c tests/parsing/test_backstick.c\
+	tests/parsing/test_word_array.c tests/parsing/test_backstick.c tests/test_backtick_exec.c\
 		$(CFLAGS) $(LDFLAGS) --coverage -lcriterion
 	./unit_tests
 	gcovr . --root . --exclude tests/ --txt-metric branch --print-summary
