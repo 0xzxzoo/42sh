@@ -9,7 +9,7 @@
 #include "42sh/ast.h"
 #include "my.h"
 
-int exec_redir_out(ast_node_t *n, char ***env)
+int exec_redir_out(ast_node_t *n, char ***env, job_list_t *jobs)
 {
     int save = dup(1);
     int fd = open(n->right->cmd, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -21,13 +21,13 @@ int exec_redir_out(ast_node_t *n, char ***env)
     }
     dup2(fd, 1);
     close(fd);
-    st = exec_ast(n->left, env);
+    st = exec_ast(n->left, env, jobs);
     dup2(save, 1);
     close(save);
     return st;
 }
 
-int exec_redir_append(ast_node_t *n, char ***env)
+int exec_redir_append(ast_node_t *n, char ***env, job_list_t *jobs)
 {
     int save = dup(1);
     int fd = open(n->right->cmd, O_WRONLY | O_CREAT | O_APPEND, 0644);
@@ -39,13 +39,13 @@ int exec_redir_append(ast_node_t *n, char ***env)
     }
     dup2(fd, 1);
     close(fd);
-    st = exec_ast(n->left, env);
+    st = exec_ast(n->left, env, jobs);
     dup2(save, 1);
     close(save);
     return st;
 }
 
-int exec_redir_in(ast_node_t *n, char ***env)
+int exec_redir_in(ast_node_t *n, char ***env, job_list_t *jobs)
 {
     int save = dup(0);
     int fd = open(n->right->cmd, O_RDONLY);
@@ -57,7 +57,7 @@ int exec_redir_in(ast_node_t *n, char ***env)
     }
     dup2(fd, 0);
     close(fd);
-    st = exec_ast(n->left, env);
+    st = exec_ast(n->left, env, jobs);
     dup2(save, 0);
     close(save);
     return st;
@@ -82,7 +82,7 @@ static void write_heredoc(char *delim, int fd)
     free(line);
 }
 
-int exec_redir_heredoc(ast_node_t *n, char ***env)
+int exec_redir_heredoc(ast_node_t *n, char ***env, job_list_t *jobs)
 {
     int pfd[2];
     int save = dup(0);
@@ -93,7 +93,7 @@ int exec_redir_heredoc(ast_node_t *n, char ***env)
     close(pfd[1]);
     dup2(pfd[0], 0);
     close(pfd[0]);
-    st = exec_ast(n->left, env);
+    st = exec_ast(n->left, env, jobs);
     dup2(save, 0);
     close(save);
     return st;

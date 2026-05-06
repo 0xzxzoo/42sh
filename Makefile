@@ -11,6 +11,7 @@ SRC	=	src/my_sh.c	\
 		src/builtins/unsetenv.c	\
 		src/builtins/where.c	\
 		src/builtins/which.c	\
+		src/builtins/jobs.c	\
 		src/execution/exec.c	\
 		src/execution/exec_redir.c	\
 		src/parsing/detect.c	\
@@ -23,9 +24,17 @@ SRC	=	src/my_sh.c	\
 		src/parsing/parser_utils.c	\
 		src/parsing/parser_redir.c	\
 		src/parsing/word_array.c \
+		src/parsing/globbing.c \
+		src/parsing/variables.c \
+		src/jobs/job_utils.c	\
+		src/jobs/job_launch.c 	\
+		src/jobs/job_list.c 	\
+		src/jobs/job_wait.c	\
 		src/utils/oldpwd.c	\
 		src/utils/path.c	\
 		src/builtins/exit.c	\
+		src/builtins/fg.c	\
+		src/builtins/bg.c	\
 		src/builtins/demo.c
 
 OBJ	=	$(SRC:.c=.o)
@@ -73,5 +82,5 @@ fclean:	clean
 
 re:	fclean all
 
-.PHONY:	all clean fclean re
+.PHONY:	all clean fclean re tests_run
 .NOTPARALLEL: re

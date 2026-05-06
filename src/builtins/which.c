@@ -8,11 +8,12 @@
 #include "42sh/my_shell.h"
 #include "my.h"
 
-int my_which(char **args, char ***env)
+int my_which(job_list_t *jobs, char **args, char ***env)
 {
     int val = 0;
     char *cmd_path = NULL;
 
+    (void) jobs;
     if (!args[1]) {
         put_error("which: Too few arguments.\n");
         return 1;
@@ -23,7 +24,8 @@ int my_which(char **args, char ***env)
             my_printf("%s\n", cmd_path);
             free(cmd_path);
         } else {
-            my_printf("%s: Command not found.\n", args[i]);
+            put_error(args[i]);
+            put_error(": Command not found.\n");
             val = 1;
         }
     }

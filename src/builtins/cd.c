@@ -14,61 +14,42 @@ static char *find_home_env(char **env)
         if (my_strncmp(env[i], "HOME=", 5) == 0)
             return env[i] + 5;
     }
+    put_error("cd: HOME not set\n");
     return NULL;
 }
 
-static char *cd_home(char **env)
+static char *get_target_dir(job_list_t *jobs, char **args, char **env)
 {
-    char *home = find_home_env(env);
-
-    if (!home) {
-        put_error("cd: HOME not set\n");
-        return NULL;
-    }
-    return home;
-}
-
-static char *cd_oldpwd(oldpwd_t *oldpwd_list)
-{
-    char *oldpwd = get_last_pwd(oldpwd_list);
-
-    if (!oldpwd) {
-        put_error(": No such file or directory.\n");
-        return NULL;
-    }
-    return oldpwd;
-}
-
-static int execute_cd(char *dir, oldpwd_t **oldpwd_list)
-{
-    char cwd[4096];
-
-    if (!getcwd(cwd, 4096))
-        return 1;
-    if (chdir(dir) != 0) {
-        put_error(dir);
-        put_error(": Not a directory.\n");
-        return 1;
-    }
-    add_oldpwd_node(oldpwd_list, cwd);
-    return 0;
-}
-
-int my_cd(char **args, char ***env)
-{
-    oldpwd_t *oldpwd_list;
     char *dir = args[1];
 
-    oldpwd_list = NULL;
-    if (!dir || (dir && my_strcmp(dir, "~") == 0)) {
-        dir = cd_home(*env);
-    }
-    if (dir && my_strcmp(dir, "-") == 0) {
-        dir = cd_oldpwd(oldpwd_list);
-    }
+    if (!dir || my_strcmp(dir, "~") == 0)
+        return find_home_env(env);
+    if (my_strcmp(dir, "-") == 0)
+        return get_last_pwd(jobs->oldpwd);
+    return dir;
+}
+
+static int do_chdir(job_list_t *jobs, char *dir)
+{
+    char cwd[PATH_MAX];
+
+    if (!getcwd(cwd, sizeof(cwd)))
+        return 1;
     if (chdir(dir) != 0) {
-        put_error("cd: cannot access directory\n");
+        put_error("cd: ");
+        put_error(dir);
+        put_error(": No such file or directory.\n");
         return 1;
     }
+    add_oldpwd_node(&jobs->oldpwd, cwd);
     return 0;
+}
+
+int my_cd(job_list_t *jobs, char **args, char ***env)
+{
+    char *dir = get_target_dir(jobs, args, *env);
+
+    if (!dir)
+        return 1;
+    return do_chdir(jobs, dir);
 }

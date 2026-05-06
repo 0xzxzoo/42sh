@@ -29,7 +29,7 @@ static void remove_env_var(char ***env, char *name)
     }
 }
 
-int my_unsetenv(char **args, char ***env)
+int my_unsetenv(job_list_t *jobs, char **args, char ***env)
 {
     int len = 0;
 

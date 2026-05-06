@@ -55,5 +55,6 @@ void put_error(const char *str);
 int my_put_nbr_in_str(int nbr, char *buffer, int start);
 char **my_str_to_word_array(char *str, char *separators);
 char *my_strdup(char const *src);
+char *my_itoa(int nb);
 
 #endif
