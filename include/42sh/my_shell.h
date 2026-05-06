@@ -62,5 +62,6 @@ char **apply_globbing(char **args);
 char **apply_variables(char **args, char **env);
 void update_last_status(int status, char ***env);
 int find_backtick(char *str);
+char *extract_backtick_cmd(char *str, int start);
 
 #endif /* !MY_SHELL_H_ */

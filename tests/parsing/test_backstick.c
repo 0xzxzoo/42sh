@@ -62,3 +62,65 @@ Test(backtick_find, double_quote_closed_before_backtick)
 {
     cr_assert_eq(find_backtick("\"hello\" `date`"), 8);
 }
+
+Test(backtick_extract, simple_cmd)
+{
+    char *cmd = extract_backtick_cmd("echo `date`", 5);
+
+    cr_assert_not_null(cmd);
+    cr_assert_str_eq(cmd, "date");
+    free(cmd);
+}
+
+Test(backtick_extract, cmd_at_start)
+{
+    char *cmd = extract_backtick_cmd("`date`", 0);
+
+    cr_assert_not_null(cmd);
+    cr_assert_str_eq(cmd, "date");
+    free(cmd);
+}
+
+Test(backtick_extract, cmd_with_args)
+{
+    char *cmd = extract_backtick_cmd("echo `ls -R`", 5);
+
+    cr_assert_not_null(cmd);
+    cr_assert_str_eq(cmd, "ls -R");
+    free(cmd);
+}
+
+Test(backtick_extract, no_closing_backtick_returns_null)
+{
+    char *cmd = extract_backtick_cmd("echo `date", 5);
+
+    cr_assert_null(cmd);
+}
+
+Test(backtick_extract, empty_cmd)
+{
+    char *cmd = extract_backtick_cmd("echo ``", 5);
+
+    cr_assert_not_null(cmd);
+    cr_assert_str_eq(cmd, "");
+    free(cmd);
+}
+
+
+Test(backtick_extract, multiword_cmd)
+{
+    char *cmd = extract_backtick_cmd("x=`echo hello world`", 2);
+
+    cr_assert_not_null(cmd);
+    cr_assert_str_eq(cmd, "echo hello world");
+    free(cmd);
+}
+
+Test(backtick_extract, only_extracts_up_to_first_closing)
+{
+    char *cmd = extract_backtick_cmd("`date` `uname`", 0);
+
+    cr_assert_not_null(cmd);
+    cr_assert_str_eq(cmd, "date");
+    free(cmd);
+}

@@ -27,6 +27,7 @@ SRC	=	src/my_sh.c	\
 		src/parsing/globbing.c \
 		src/parsing/variables.c \
 		src/parsing/backtick/backtick_find.c \
+		src/parsing/backtick/backtick_extract.c \
 		src/jobs/job_utils.c	\
 		src/jobs/job_launch.c 	\
 		src/jobs/job_list.c 	\
@@ -46,7 +47,7 @@ SRC_NO_MAIN =   $(filter-out src/my_sh.c, $(SRC))
 
 LIB 	=	lib/my/libmy.a
 
-CC	=	epiclang
+CC	=	gcc
 
 CFLAGS	+=	-I./include -I./lib/my
 
@@ -66,7 +67,7 @@ tests_run: fclean $(LIB)
 	tests/parsing/test_word_array.c tests/parsing/test_backstick.c\
 		$(CFLAGS) $(LDFLAGS) --coverage -lcriterion
 	./unit_tests
-	gcovr . --root . --exclude tests/ --gcov-executable "llvm-cov gcov" --txt-metric branch --print-summary
+	gcovr . --root . --exclude tests/ --txt-metric branch --print-summary
 
 clean:
 	rm -f $(OBJ)
