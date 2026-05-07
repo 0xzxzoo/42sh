@@ -70,7 +70,7 @@ tests_run: fclean $(LIB)
 	tests/parsing/test_word_array.c tests/parsing/test_backstick.c tests/test_backtick_exec.c\
 		$(CFLAGS) $(LDFLAGS) --coverage -lcriterion
 	./unit_tests
-	gcovr . --root . --exclude tests/ --txt-metric branch --print-summary
+	gcovr . --root . --exclude tests/ --gcov-executable "llvm-cov gcov" --txt-metric branch --print-summary
 
 clean:
 	rm -f $(OBJ)
