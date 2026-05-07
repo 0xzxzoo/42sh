@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2026
-** globbing.c
+** 42sh
 ** File description:
 ** globbing
 */
@@ -26,10 +26,10 @@ static int count_new_args(char **args)
     return count;
 }
 
-static void fill_glob_results(char **new_args, int *idx, glob_t *g)
+static void fill_glob(char **n_args, int *idx, glob_t *g)
 {
     for (size_t j = 0; j < g->gl_pathc; j++) {
-        new_args[*idx] = my_strdup(g->gl_pathv[j]);
+        n_args[*idx] = my_strdup(g->gl_pathv[j]);
         (*idx)++;
     }
     globfree(g);
@@ -45,7 +45,7 @@ char **apply_globbing(char **args)
         return NULL;
     for (int i = 0; args[i]; i++) {
         if (glob(args[i], GLOB_NOCHECK | GLOB_NOMAGIC, NULL, &g) == 0) {
-            fill_glob_results(n_args, &idx, &g);
+            fill_glob(n_args, &idx, &g);
         } else {
             n_args[idx] = my_strdup(args[i]);
             idx++;

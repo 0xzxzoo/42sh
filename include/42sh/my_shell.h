@@ -59,5 +59,12 @@ int get_job_id(job_list_t *jobs, char *arg);
 void my_put_error(const char *str);
 char *env_get(char ***env, const char *name);
 char **apply_globbing(char **args);
+char **apply_variables(char **args, char **env);
+void update_last_status(int status, char ***env);
+int find_backtick(char *str);
+char *extract_backtick_cmd(char *str, int start);
+char *capture_cmd_output(char *cmd, char ***env, job_list_t *jobs);
+char *replace_backtick(char *str, char ***env, job_list_t *jobs);
+char *expand_backticks(char *str, char ***env, job_list_t *jobs);
 
 #endif /* !MY_SHELL_H_ */

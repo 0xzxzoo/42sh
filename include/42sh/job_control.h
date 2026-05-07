@@ -30,7 +30,6 @@ typedef struct job_s {
     int exit_code;
 } job_t;
 
-
 typedef struct oldpwd_s oldpwd_t;
 
 typedef struct job_list_s {

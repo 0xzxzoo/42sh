@@ -62,6 +62,7 @@ SRC	=	my_compute_power_rec.c	\
 		printf_sign_plus.c	\
 		printf_string.c	\
 		printf_unsdecimal.c	\
+		my_itoa.c
 
 OBJ	=	$(SRC:.c=.o)
 
