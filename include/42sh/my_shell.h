@@ -64,6 +64,7 @@ void update_last_status(int status, char ***env);
 int find_backtick(char *str);
 char *extract_backtick_cmd(char *str, int start);
 char *capture_cmd_output(char *cmd, char ***env, job_list_t *jobs);
-char *replace_one_backtick(char *str, char ***env, job_list_t *jobs);
+char *replace_backtick(char *str, char ***env, job_list_t *jobs);
+char *expand_backticks(char *str, char ***env, job_list_t *jobs);
 
 #endif /* !MY_SHELL_H_ */

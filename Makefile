@@ -30,6 +30,7 @@ SRC	=	src/my_sh.c	\
 		src/parsing/backtick/backtick_extract.c \
 		src/parsing/backtick/backtick_find.c \
 		src/parsing/backtick/backtick_replace.c \
+		src/parsing/backtick/backtick_expand.c \
 		src/jobs/job_utils.c	\
 		src/jobs/job_launch.c 	\
 		src/jobs/job_list.c 	\

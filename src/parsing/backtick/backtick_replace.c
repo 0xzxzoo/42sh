@@ -32,7 +32,7 @@ static char *build_result(char *str, int open, int close, char *output)
     return res;
 }
 
-char *replace_one_backtick(char *str, char ***env, job_list_t *jobs)
+char *replace_backtick(char *str, char ***env, job_list_t *jobs)
 {
     int open = find_backtick(str);
     int close;
@@ -44,7 +44,7 @@ char *replace_one_backtick(char *str, char ***env, job_list_t *jobs)
         return my_strdup(str);
     close = find_closing(str, open);
     if (close == -1)
-        return my_strdup(str);
+        return NULL;
     cmd = my_strndup(str + open + 1, close - open - 1);
     output = capture_cmd_output(cmd, env, jobs);
     free(cmd);

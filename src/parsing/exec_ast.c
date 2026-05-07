@@ -87,9 +87,15 @@ int exec_ast(ast_node_t *node, char ***env, job_list_t *jobs)
 
 int process_ast_line(char *line, char ***env, job_list_t *jobs)
 {
-    ast_node_t *ast = parse_expr(line);
-    int status = exec_ast(ast, env, jobs);
+    char *expanded = expand_backticks(line, env, jobs);
+    ast_node_t *ast;
+    int status;
 
+    if (!expanded)
+        return 1;
+    ast = parse_expr(expanded);
+    status = exec_ast(ast, env, jobs);
     free_ast(ast);
+    free(expanded);
     return status;
 }
