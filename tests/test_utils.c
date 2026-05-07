@@ -204,7 +204,7 @@ Test(path, get_cmd_path_found_in_path, .init = cr_redirect_stdout)
     free(res);
 }
 
-Test(path, get_cmd_path_not_found, .init = cr_redirect_stdout)
+Test(path, get_cmd_path_not_found, .init = cr_redirect_stderr)
 {
     char *env[] = {"PATH=/nonexistent_xyz", NULL};
     char *args[] = {"no_such_cmd_xyz", NULL};
@@ -215,7 +215,7 @@ Test(path, get_cmd_path_not_found, .init = cr_redirect_stdout)
 
     cr_assert_null(res,
         "get_cmd_path must return NULL for unknown command");
-    out = cr_get_redirected_stdout();
+    out = cr_get_redirected_stderr();
     n = fread(buf, 1, sizeof(buf) - 1, out);
     buf[(n > 0) ? n : 0] = '\0';
     cr_assert(strstr(buf, "not found") != NULL ||
