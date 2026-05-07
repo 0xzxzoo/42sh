@@ -50,6 +50,7 @@ int exec_background(ast_node_t *node, char ***env, job_list_t *jobs)
 {
     pid_t pid = fork();
     char *label;
+    int job_id;
 
     if (pid == 0) {
         setpgid(0, 0);
@@ -59,8 +60,11 @@ int exec_background(ast_node_t *node, char ***env, job_list_t *jobs)
         _exit(exec_ast(node->left, env, jobs));
     }
     setpgid(pid, pid);
-    label = (node->left && node->left->cmd) ? node->left->cmd : "";
-    jobs_add(jobs, pid, label);
+    label = (node->left && node->left->cmd) ? node->left->cmd : "unknown";
+    job_id = jobs_add(jobs, pid, label);
+    if (job_id > 0) {
+        my_printf("[%d] %d\n", job_id, pid);
+    }
     if (node->right)
         return exec_ast(node->right, env, jobs);
     return 0;

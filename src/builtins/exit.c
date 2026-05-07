@@ -13,6 +13,10 @@ int my_exit(job_list_t *jobs, char **args, char ***env)
     int val = 0;
 
     (void)env;
+    if (jobs) {
+        jobs_update_all(jobs);
+        notify_done_jobs(jobs);
+    }
     if (args[1] != NULL)
         val = my_getnbr(args[1]);
     free_array(args);
