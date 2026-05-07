@@ -66,5 +66,7 @@ char *extract_backtick_cmd(char *str, int start);
 char *capture_cmd_output(char *cmd, char ***env, job_list_t *jobs);
 char *replace_backtick(char *str, char ***env, job_list_t *jobs);
 char *expand_backticks(char *str, char ***env, job_list_t *jobs);
+int find_background_op(char *str);
+int exec_background(ast_node_t *node, char ***env, job_list_t *jobs);
 
 #endif /* !MY_SHELL_H_ */

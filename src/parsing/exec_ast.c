@@ -62,6 +62,17 @@ static int exec_cmd_node(ast_node_t *node, char ***env, job_list_t *jobs)
     return execute_single_cmd(node->cmd, env, jobs);
 }
 
+static int exec_redir_node(ast_node_t *node, char ***env, job_list_t *jobs)
+{
+    if (node->type == NODE_REDIR_OUT)
+        return exec_redir_out(node, env, jobs);
+    if (node->type == NODE_REDIR_APPEND)
+        return exec_redir_append(node, env, jobs);
+    if (node->type == NODE_REDIR_IN)
+        return exec_redir_in(node, env, jobs);
+    return exec_redir_heredoc(node, env, jobs);
+}
+
 int exec_ast(ast_node_t *node, char ***env, job_list_t *jobs)
 {
     if (!node)
@@ -74,14 +85,10 @@ int exec_ast(ast_node_t *node, char ***env, job_list_t *jobs)
         return exec_and_or(node, env, jobs);
     if (node->type == NODE_PIPE)
         return exec_pipe_node(node, env, jobs);
-    if (node->type == NODE_REDIR_OUT)
-        return exec_redir_out(node, env, jobs);
-    if (node->type == NODE_REDIR_APPEND)
-        return exec_redir_append(node, env, jobs);
-    if (node->type == NODE_REDIR_IN)
-        return exec_redir_in(node, env, jobs);
-    if (node->type == NODE_REDIR_HEREDOC)
-        return exec_redir_heredoc(node, env, jobs);
+    if (node->type == NODE_BACKGROUND)
+        return exec_background(node, env, jobs);
+    if (node->type >= NODE_REDIR_OUT && node->type <= NODE_REDIR_HEREDOC)
+        return exec_redir_node(node, env, jobs);
     return exec_cmd_node(node, env, jobs);
 }
 
