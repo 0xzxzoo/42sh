@@ -14,7 +14,10 @@ int my_bg(job_list_t *jobs, char **args, char ***env)
 
     (void)env;
     if (!job) {
-        put_error("bg: no such job\n");
+        if (args[1])
+            put_error("bg: No such job.\n");
+        else
+            put_error("bg: No current job.\n");
         return 1;
     }
     if (job->status == JOB_RUNNING) {

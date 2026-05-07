@@ -67,6 +67,8 @@ void jobs_remove(job_list_t *jobs, int id)
 
 job_t *find_jobs_id(job_list_t *jobs, int id)
 {
+    if (id == 0)
+        return NULL;
     for (int i = 0; i < MAX_JOBS; i++) {
         if (jobs->jobs[i].id == id)
             return &jobs->jobs[i];
