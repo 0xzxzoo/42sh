@@ -17,7 +17,7 @@ Test(read_line, reads_input)
     fputs("hello world\n", tmp);
     rewind(tmp);
     stdin = tmp;
-    res = read_line();
+    res = read_line(NULL);
     cr_assert_not_null(res);
     cr_assert_str_eq(res, "hello world\n");
     free(res);
@@ -31,7 +31,7 @@ Test(read_line, handles_eof)
 
     rewind(tmp);
     stdin = tmp;
-    res = read_line();
+    res = read_line(NULL);
     cr_assert_null(res);
     fclose(tmp);
 }
@@ -44,7 +44,7 @@ Test(read_line, handles_empty_input)
     fputs("\n", tmp);
     rewind(tmp);
     stdin = tmp;
-    res = read_line();
+    res = read_line(NULL);
     cr_assert_not_null(res);
     cr_assert_str_eq(res, "\n");
     free(res);
@@ -59,7 +59,7 @@ Test(read_line, reads_multiple_words)
     fputs("echo hello world\n", tmp);
     rewind(tmp);
     stdin = tmp;
-    res = read_line();
+    res = read_line(NULL);
     cr_assert_not_null(res);
     cr_assert_str_eq(res, "echo hello world\n");
     free(res);
@@ -74,7 +74,7 @@ Test(read_line, reads_only_first_line)
     fputs("first line\nsecond line\n", tmp);
     rewind(tmp);
     stdin = tmp;
-    res = read_line();
+    res = read_line(NULL);
     cr_assert_not_null(res);
     cr_assert_str_eq(res, "first line\n");
     free(res);
@@ -89,7 +89,7 @@ Test(read_line, newline_included_in_result)
     fputs("test\n", tmp);
     rewind(tmp);
     stdin = tmp;
-    res = read_line();
+    res = read_line(NULL);
     cr_assert_not_null(res);
     cr_assert_eq(res[4], '\n');
     free(res);
