@@ -39,6 +39,31 @@ static char *read_from_pipe(int fd)
     return buf;
 }
 
+static char **dup_env(char **env)
+{
+    int len = 0;
+    char **copy;
+
+    while (env && env[len])
+        len++;
+    copy = malloc(sizeof(char *) * (len + 1));
+    if (!copy)
+        return NULL;
+    for (int i = 0; i < len; i++)
+        copy[i] = my_strdup(env[i]);
+    copy[len] = NULL;
+    return copy;
+}
+
+static void run_child(char *cmd, char ***env, job_list_t *jobs, int fd)
+{
+    char **env_copy = dup_env(*env);
+
+    dup2(fd, 1);
+    close(fd);
+    _exit(process_ast_line(cmd, &env_copy, jobs));
+}
+
 char *capture_cmd_output(char *cmd, char ***env, job_list_t *jobs)
 {
     int pfd[2];
@@ -51,9 +76,7 @@ char *capture_cmd_output(char *cmd, char ***env, job_list_t *jobs)
     pid = fork();
     if (pid == 0) {
         close(pfd[0]);
-        dup2(pfd[1], 1);
-        close(pfd[1]);
-        exit(process_ast_line(cmd, env, jobs));
+        run_child(cmd, env, jobs, pfd[1]);
     }
     close(pfd[1]);
     result = read_from_pipe(pfd[0]);
