@@ -26,9 +26,10 @@ SRC	=	src/my_sh.c	\
 		src/parsing/word_array.c \
 		src/parsing/globbing.c \
 		src/parsing/variables.c \
-		src/parsing/backtick/backtick_find.c \
+		src/parsing/backtick/backtick_exec.c \
 		src/parsing/backtick/backtick_extract.c \
-		src/execution/backtick/backtick_exec.c	\
+		src/parsing/backtick/backtick_find.c \
+		src/parsing/backtick/backtick_replace.c \
 		src/jobs/job_utils.c	\
 		src/jobs/job_launch.c 	\
 		src/jobs/job_list.c 	\
@@ -48,7 +49,7 @@ SRC_NO_MAIN =   $(filter-out src/my_sh.c, $(SRC))
 
 LIB 	=	lib/my/libmy.a
 
-CC	=	gcc
+CC	=	epiclang
 
 CFLAGS	+=	-I./include -I./lib/my
 
