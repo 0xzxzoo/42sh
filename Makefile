@@ -67,7 +67,8 @@ $(NAME):	$(LIB) $(OBJ)
 tests_run: fclean $(LIB)
 	$(CC) -o unit_tests $(SRC_NO_MAIN) tests/test_builtins.c 	tests/test_utils.c \
 	tests/parsing/test_parser.c	tests/parsing/test_exec.c tests/parsing/test_parsing_utils.c \
-	tests/parsing/test_word_array.c tests/parsing/test_backstick.c tests/test_backtick_exec.c\
+	tests/parsing/test_word_array.c tests/parsing/test_backstick.c tests/test_backtick_exec.c \
+	tests/test_where_which.c \
 		$(CFLAGS) $(LDFLAGS) --coverage -lcriterion
 	./unit_tests
 	gcovr . --root . --exclude tests/ --gcov-executable "llvm-cov gcov" --txt-metric branch --print-summary

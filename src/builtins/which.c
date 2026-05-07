@@ -24,8 +24,7 @@ int my_which(job_list_t *jobs, char **args, char ***env)
             my_printf("%s\n", cmd_path);
             free(cmd_path);
         } else {
-            put_error(args[i]);
-            put_error(": Command not found.\n");
+            my_printf("%s: Command not found.\n", args[i]);
             val = 1;
         }
     }
