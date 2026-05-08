@@ -11,9 +11,23 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-static int count_lines(const char *filename)
+int open_h_file(char **env, int mode)
 {
-    int fd = open(filename, O_RDONLY);
+    char *dirname = env_get(env, "HOME");
+    char *path;
+    int fd;
+
+    if (!dirname)
+        return -1;
+    path = combine_path(dirname, strlen(dirname), HISTORY_FILE);
+    fd = open(path, mode);
+    free(path);
+    return fd;
+}
+
+static int count_lines(char **env)
+{
+    int fd = open_h_file(env, O_RDONLY);
     int count = 0;
     char buffer[1];
 
@@ -43,9 +57,9 @@ static char *extract_line(int fd)
     return (line);
 }
 
-static char *get_line_at(const char *filename, int target)
+static char *get_line_at(char **env, int target)
 {
-    int fd = open(filename, O_RDONLY);
+    int fd = open_h_file(env, O_RDONLY);
     int current = 1;
     char buffer[1];
     char *result = NULL;
@@ -56,25 +70,42 @@ static char *get_line_at(const char *filename, int target)
         if (buffer[0] == '\n')
             current++;
     }
+    if (current < target) {
+        close(fd);
+        return NULL;
+    }
     result = extract_line(fd);
     close(fd);
     return (result);
 }
 
-char *exec_history_expansion(const char *input)
+char *expand_history(const char *input, char **env)
 {
-    const char *file = ".shell_history";
     int target = 0;
 
     if (!input || input[0] != '!')
         return (NULL);
     if (input[1] == '!') {
-        target = count_lines(file);
-        return (get_line_at(file, target));
+        target = count_lines(env);
+        return (get_line_at(env, target));
     }
     if (input[1] >= '0' && input[1] <= '9') {
         target = atoi(&input[1]);
-        return (get_line_at(file, target));
+        return (get_line_at(env, target));
     }
     return (NULL);
+}
+
+int my_history(job_list_t *jobs, char **args, char ***env)
+{
+    char *line = get_line_at(*env, 1);
+    int count = 1;
+
+    while (line) {
+        printf("%4d     %s\n", count, line);
+        count++;
+        free(line);
+        line = get_line_at(*env, count);
+    }
+    return 0;
 }

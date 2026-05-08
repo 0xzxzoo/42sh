@@ -29,7 +29,7 @@ static void fill_path(char *res, char *dir, int len, const char *command)
     res[i] = '\0';
 }
 
-static char *combine_path(char *dir, int len, const char *command)
+char *combine_path(char *dir, int len, const char *command)
 {
     int cmd_len = my_strlen(command);
     char *res;
