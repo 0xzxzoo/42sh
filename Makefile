@@ -36,7 +36,8 @@ SRC	=	src/my_sh.c	\
 		src/builtins/fg.c	\
 		src/builtins/bg.c	\
 		src/builtins/demo.c	\
-		src/builtins/history.c	
+		src/builtins/history.c	\
+		src/utils/env.c	
 
 OBJ	=	$(SRC:.c=.o)
 
