@@ -19,7 +19,8 @@ typedef enum node_type_e {
     NODE_REDIR_APPEND,
     NODE_REDIR_IN,
     NODE_REDIR_HEREDOC,
-    NODE_FILE
+    NODE_FILE,
+    NODE_BACKGROUND
 } node_type_t;
 
 typedef struct ast_node_s {

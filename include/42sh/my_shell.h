@@ -66,5 +66,12 @@ char **apply_variables(char **args, char **env);
 void update_last_status(int status, char ***env);
 int my_history(job_list_t *jobs, char **args, char ***env);
 void add_to_history(const char *line, char **env);
+int find_backtick(char *str);
+char *extract_backtick_cmd(char *str, int start);
+char *capture_cmd_output(char *cmd, char ***env, job_list_t *jobs);
+char *replace_backtick(char *str, char ***env, job_list_t *jobs);
+char *expand_backticks(char *str, char ***env, job_list_t *jobs);
+int find_background_op(char *str);
+int exec_background(ast_node_t *node, char ***env, job_list_t *jobs);
 
 #endif /* !MY_SHELL_H_ */
