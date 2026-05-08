@@ -19,6 +19,7 @@ const builtin_t BUILTIN[] = {
     {"jobs", my_jobs},
     {"bg", my_bg},
     {"fg", my_fg},
+    {"history", my_history},
     {NULL, NULL}
 };
 

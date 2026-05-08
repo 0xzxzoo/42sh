@@ -25,16 +25,25 @@ SRC	=	src/my_sh.c	\
 		src/parsing/parser_redir.c	\
 		src/parsing/word_array.c \
 		src/parsing/globbing.c \
+		src/parsing/variables.c \
+		src/parsing/backtick/backtick_exec.c \
+		src/parsing/backtick/backtick_extract.c \
+		src/parsing/backtick/backtick_find.c \
+		src/parsing/backtick/backtick_replace.c \
+		src/parsing/backtick/backtick_expand.c \
 		src/jobs/job_utils.c	\
 		src/jobs/job_launch.c 	\
 		src/jobs/job_list.c 	\
+		src/jobs/job_parser.c 	\
 		src/jobs/job_wait.c	\
 		src/utils/oldpwd.c	\
 		src/utils/path.c	\
 		src/builtins/exit.c	\
 		src/builtins/fg.c	\
 		src/builtins/bg.c	\
-		src/builtins/demo.c
+		src/builtins/demo.c	\
+		src/builtins/history.c	\
+		src/utils/env.c	
 
 OBJ	=	$(SRC:.c=.o)
 
@@ -61,7 +70,8 @@ $(NAME):	$(LIB) $(OBJ)
 tests_run: fclean $(LIB)
 	$(CC) -o unit_tests $(SRC_NO_MAIN) tests/test_builtins.c 	tests/test_utils.c \
 	tests/parsing/test_parser.c	tests/parsing/test_exec.c tests/parsing/test_parsing_utils.c \
-	tests/parsing/test_word_array.c \
+	tests/parsing/test_word_array.c tests/parsing/test_backstick.c tests/test_backtick_exec.c \
+	tests/test_where_which.c \
 		$(CFLAGS) $(LDFLAGS) --coverage -lcriterion
 	./unit_tests
 	gcovr . --root . --exclude tests/ --gcov-executable "llvm-cov gcov" --txt-metric branch --print-summary

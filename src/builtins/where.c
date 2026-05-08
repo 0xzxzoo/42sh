@@ -75,10 +75,8 @@ int my_where(job_list_t *jobs, char **args, char ***env)
         put_error("where: Too few arguments.\n");
         return 1;
     }
-    for (int i = 1; args[i]; i++) {
-        found = check_builtin_where(args[i]);
-        found += find_all_in_path(args[i], *env);
-        if (!found)
+    for (int i = 1; args[i] != NULL; i++) {
+        if (!find_all_in_path(args[i], *env)) {
             val = 1;
     }
     return val;

@@ -7,6 +7,8 @@
 
 #include "42sh/my_shell.h"
 #include "my.h"
+#include <stdlib.h>
+#include <unistd.h>
 
 static void fill_path(char *res, char *dir, int len, const char *command)
 {
@@ -27,11 +29,13 @@ static void fill_path(char *res, char *dir, int len, const char *command)
     res[i] = '\0';
 }
 
-static char *combine_path(char *dir, int len, const char *command)
+char *combine_path(char *dir, int len, const char *command)
 {
     int cmd_len = my_strlen(command);
     char *res;
 
+    if (len == 0)
+        return my_strdup(command);
     res = malloc(sizeof(char) * (len + cmd_len + 2));
     if (!res)
         return NULL;
@@ -102,8 +106,6 @@ char *get_cmd_path(char **args, char **env)
         put_error(": Command not found.\n");
         return NULL;
     }
-    if (access(args[0], X_OK) == 0)
-        return my_strdup(args[0]);
     cmd_path = find_command_in_path(args[0], env);
     if (!cmd_path) {
         put_error(args[0]);
