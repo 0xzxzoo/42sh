@@ -14,7 +14,10 @@ int my_fg(job_list_t *jobs, char **args, char ***env)
 
     (void)env;
     if (!job) {
-        put_error("fg: no such job\n");
+        if (args[1])
+            put_error("fg: No such job.\n");
+        else
+            put_error("fg: No current job.\n");
         return 1;
     }
     job->status = JOB_RUNNING;

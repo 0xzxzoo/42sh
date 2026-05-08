@@ -18,7 +18,9 @@
     #include <sys/utsname.h>
     #include <signal.h>
     #include <fcntl.h>
+    #include <string.h>
     #define PATH_MAX 4096
+    #define HISTORY_FILE ".shell_history"
 
 typedef struct job_list_s job_list_t;
 
@@ -38,6 +40,7 @@ void print_tag(void);
 char *read_line(void);
 void free_array(char **array);
 void check_status(int status);
+char *combine_path(char *dir, int len, const char *filename);
 char *get_full_path(char *paths, const char *command);
 char *find_command_in_path(const char *command, char **env);
 char *get_cmd_path(char **args, char **env);
@@ -57,9 +60,18 @@ int my_bg(job_list_t *jobs, char **args, char ***env);
 int my_fg(job_list_t *jobs, char **args, char ***env);
 int get_job_id(job_list_t *jobs, char *arg);
 void my_put_error(const char *str);
-char *env_get(char ***env, const char *name);
+char *env_get(char **env, const char *name);
 char **apply_globbing(char **args);
 char **apply_variables(char **args, char **env);
 void update_last_status(int status, char ***env);
+int my_history(job_list_t *jobs, char **args, char ***env);
+void add_to_history(const char *line, char **env);
+int find_backtick(char *str);
+char *extract_backtick_cmd(char *str, int start);
+char *capture_cmd_output(char *cmd, char ***env, job_list_t *jobs);
+char *replace_backtick(char *str, char ***env, job_list_t *jobs);
+char *expand_backticks(char *str, char ***env, job_list_t *jobs);
+int find_background_op(char *str);
+int exec_background(ast_node_t *node, char ***env, job_list_t *jobs);
 
 #endif /* !MY_SHELL_H_ */

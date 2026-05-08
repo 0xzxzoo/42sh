@@ -223,3 +223,36 @@ Test(path, get_cmd_path_not_found, .init = cr_redirect_stderr)
         strstr(buf, "no_such_cmd_xyz") != NULL,
         "error must mention the command, got: %s", buf);
 }
+
+Test(env_get, variable_not_found)
+{
+    char *env[] = {
+        "bonjour=",
+        "aurevoir=test",
+        NULL,
+    };
+
+    cr_assert_eq(env_get(env, "test"), NULL);
+}
+
+Test(env_get, existing_variable)
+{
+    char *env[] = {
+        "bonjour=",
+        "aurevoir=test",
+        NULL,
+    };
+
+    cr_assert_str_eq(env_get(env, "aurevoir"), "test");
+}
+
+Test(env_get, empty_variable)
+{
+    char *env[] = {
+        "bonjour=",
+        "aurevoir=test",
+        NULL,
+    };
+
+    cr_assert_str_eq(env_get(env, "bonjour"), "");
+}

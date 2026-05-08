@@ -7,6 +7,7 @@
 
 #include "42sh/my_shell.h"
 #include "my.h"
+#include <sys/stat.h>
 
 static char *find_home_env(char **env)
 {
@@ -29,6 +30,17 @@ static char *get_target_dir(job_list_t *jobs, char **args, char **env)
     return dir;
 }
 
+static void print_cd_error(char *dir)
+{
+    put_error(dir);
+    if (errno == ENOTDIR)
+        put_error(": Not a directory.\n");
+    else if (errno == EACCES)
+        put_error(": Permission denied.\n");
+    else
+        put_error(": No such file or directory.\n");
+}
+
 static int do_chdir(job_list_t *jobs, char *dir)
 {
     char cwd[PATH_MAX];
@@ -36,9 +48,7 @@ static int do_chdir(job_list_t *jobs, char *dir)
     if (!getcwd(cwd, sizeof(cwd)))
         return 1;
     if (chdir(dir) != 0) {
-        put_error("cd: ");
-        put_error(dir);
-        put_error(": No such file or directory.\n");
+        print_cd_error(dir);
         return 1;
     }
     add_oldpwd_node(&jobs->oldpwd, cwd);

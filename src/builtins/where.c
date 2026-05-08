@@ -67,8 +67,6 @@ int my_where(job_list_t *jobs, char **args, char ***env)
     }
     for (int i = 1; args[i] != NULL; i++) {
         if (!find_all_in_path(args[i], *env)) {
-            put_error(args[i]);
-            put_error(": Command not found.\n");
             val = 1;
         }
     }

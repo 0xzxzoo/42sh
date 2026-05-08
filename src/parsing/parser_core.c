@@ -55,6 +55,12 @@ ast_node_t *parse_expr(char *str)
 {
     int idx;
 
+    idx = find_op(str, "&&");
+    if (idx == -1)
+        idx = find_op(str, "&");
+    idx = find_background_op(str);
+    if (idx != -1)
+        return split_node(str, idx, 1, NODE_BACKGROUND);
     idx = find_op(str, ";");
     if (idx != -1)
         return split_node(str, idx, 1, NODE_SEMI);
