@@ -44,6 +44,7 @@ int main(int argc, char **argv, char **env)
     jobs_init(&jobs);
     line = read_line();
     while (line) {
+        add_to_history(line, my_env);
         jobs_update_all(&jobs);
         notify_done_jobs(&jobs);
         process_ast_line(line, &my_env, &jobs);

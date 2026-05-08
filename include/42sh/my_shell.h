@@ -65,5 +65,6 @@ char **apply_globbing(char **args);
 char **apply_variables(char **args, char **env);
 void update_last_status(int status, char ***env);
 int my_history(job_list_t *jobs, char **args, char ***env);
+void add_to_history(const char *line, char **env);
 
 #endif /* !MY_SHELL_H_ */

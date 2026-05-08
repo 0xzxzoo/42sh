@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdbool.h>
 
 int open_h_file(char **env, int mode)
 {
@@ -20,7 +21,7 @@ int open_h_file(char **env, int mode)
     if (!dirname)
         return -1;
     path = combine_path(dirname, strlen(dirname), HISTORY_FILE);
-    fd = open(path, mode);
+    fd = open(path, mode, 0644);
     free(path);
     return fd;
 }
@@ -96,13 +97,36 @@ char *expand_history(const char *input, char **env)
     return (NULL);
 }
 
+static bool is_empty(const char *line)
+{
+    for (int i = 0; line[i] != '\0'; i++) {
+        if (line[i] != ' ' || line[i] != '\t')
+            return false;
+    }
+    return true;
+}
+
+void add_to_history(const char *line, char **env)
+{
+    int fd;
+
+    if (is_empty(line))
+        return;
+    fd = open_h_file(env, O_WRONLY | O_APPEND | O_CREAT);
+    if (fd < 0)
+        return;
+    write(fd, line, strlen(line));
+    close(fd);
+}
+
 int my_history(job_list_t *jobs, char **args, char ***env)
 {
     char *line = get_line_at(*env, 1);
     int count = 1;
 
     while (line) {
-        printf("%4d     %s\n", count, line);
+        if (!is_empty(line))
+            printf("%4d     %s\n", count, line);
         count++;
         free(line);
         line = get_line_at(*env, count);
