@@ -8,7 +8,7 @@
 #include "42sh/my_shell.h"
 #include "my.h"
 
-static const builtin_t BUILTIN[] = {
+const builtin_t BUILTIN[] = {
     {"cd", my_cd},
     {"setenv", my_setenv},
     {"unsetenv", my_unsetenv},

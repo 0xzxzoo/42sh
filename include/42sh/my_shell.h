@@ -32,6 +32,8 @@ typedef struct builtin_s {
     int (*func)(job_list_t *jobs, char **args, char ***env);
 } builtin_t;
 
+extern const builtin_t BUILTIN[];
+
 int detect_cmd(char **args, int *return_val, char ***env, job_list_t *jobs);
 int exec_cmd(char **args, char **env);
 void print_tag(void);
