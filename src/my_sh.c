@@ -34,6 +34,14 @@ static char **copy_env(char **env)
     return new_env;
 }
 
+static void update_jobs(job_list_t *jobs)
+{
+    if (jobs->count <= 0)
+        return;
+    jobs_update_all(jobs);
+    notify_done_jobs(jobs);
+}
+
 int main(int argc, char **argv, char **env)
 {
     job_list_t jobs = {0};
@@ -51,10 +59,7 @@ int main(int argc, char **argv, char **env)
         free(line);
         line = read_line();
     }
-    if (jobs.count > 0) {
-        jobs_update_all(&jobs);
-        notify_done_jobs(&jobs);
-    }
+    update_jobs(&jobs);
     free_array(my_env);
     return 0;
 }
