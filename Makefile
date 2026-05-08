@@ -34,6 +34,7 @@ SRC	=	src/my_sh.c	\
 		src/jobs/job_utils.c	\
 		src/jobs/job_launch.c 	\
 		src/jobs/job_list.c 	\
+		src/jobs/job_parser.c 	\
 		src/jobs/job_wait.c	\
 		src/utils/oldpwd.c	\
 		src/utils/path.c	\
