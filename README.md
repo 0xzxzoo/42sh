@@ -42,5 +42,5 @@ Le cœur de notre parser gère de multiples opérateurs avec une gestion stricte
 Clonez le dépôt et compilez le projet à l'aide du `Makefile` inclus :
 
 ```bash
-git clone [https://github.com/0xzxzoo/42sh.git](https://github.com/0xzxzoo/42sh.git)
+git clone https://github.com/0xzxzoo/42sh.git
 make
